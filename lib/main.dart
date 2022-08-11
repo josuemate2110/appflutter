@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterapp/login.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +22,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      // home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const Login(),
     );
   }
 }
@@ -160,9 +164,42 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _create(),
-        child: const Icon(Icons.add),
+      floatingActionButton: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Spacer(),
+          FloatingActionButton(
+            onPressed: () => _create(),
+            child: const Icon(Icons.add),
+          ),
+          GestureDetector(
+            onTap: () async {
+              final navigator = Navigator.of(context);
+              final google = GoogleSignIn();
+              final firebase = FirebaseAuth.instance;
+              await google.signOut();
+              await firebase.signOut();
+              navigator.pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => const Login(),
+                ),
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.all(15),
+              margin: const EdgeInsets.only(left: 10),
+              decoration: const BoxDecoration(
+                color: Colors.red,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.power_settings_new,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          const Spacer(),
+        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: StreamBuilder(
